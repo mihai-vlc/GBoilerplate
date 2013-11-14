@@ -5,7 +5,7 @@ body {
 }
 /* line 6, ../scss/2style.scss */
 body h1:hover {
-  color: red;
+  color: white;
 }
 
 /* line 11, ../scss/2style.scss */
@@ -14,7 +14,5 @@ div {
   width: 50%;
   margin: 300px auto;
   text-align: center;
-  -webkit-border-radius: 4px 4px;
-  -moz-border-radius: 4px / 4px;
-  border-radius: 4px / 4px;
+  border-radius: 4px;
 }

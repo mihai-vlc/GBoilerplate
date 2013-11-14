@@ -4,7 +4,7 @@ body {
     background: #ccc;
     h1 {
         &:hover {
-            color: red;
+            color: white;
         }
     }
 }
@@ -14,5 +14,5 @@ div {
     margin: 300px auto;
     text-align: center;
 
-    @include border-radius(4px, 4px);
+    border-radius: 4px;
 }

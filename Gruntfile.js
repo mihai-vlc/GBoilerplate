@@ -8,22 +8,21 @@ var lrSnippet = require('connect-livereload')({
   port: LIVERELOAD_PORT
 });
 var mountFolder = function (connect, dir) {
-  console.log(require('path').resolve(dir));
   return connect.static(require('path').resolve(dir));
 };
+
 
 /**
  * Grunt module
  */
 module.exports = function (grunt) {
-
   /**
    * Dynamically load npm tasks
    */
   require('matchdep').filterDev('grunt-*').forEach(grunt.loadNpmTasks);
 
   /**
-   * FireShell Grunt config
+   * Grunt config
    */
   grunt.initConfig({
 
@@ -175,6 +174,7 @@ module.exports = function (grunt) {
             dest: '<%= project.app %>'   // destination *directory*, probably better than specifying same file names twice
         }
     },
+
     /**
      * CSSMin
      * CSS minification
@@ -208,15 +208,22 @@ module.exports = function (grunt) {
      * Livereload the browser once complete
      */
     watch: {
-      concat: {
-        files: ['<%= project.js %>{,*/}*.js',
-                '<%= project.css %>{,*/}*.css'
+      wrap: {
+        files: ['<%= project.src %>/pages/content/{,*/}*.html',
+                '<%= project.src %>/pages/footer.tmpl',
+                '<%= project.src %>/pages/header.tmpl'
         ],
-        tasks: ['concat:dev']
+        tasks: ['wrap']
+      },
+      concat: {
+        files: ['<%= project.js %>',
+                '<%= project.css %>'
+        ],
+        tasks: ['concat:dev', 'autoprefixer:dev']
       },
       compass: {
         files: '<%= project.dev_assets %>/{,*/}*.{scss,sass}',
-        tasks: ['compass', 'concat:dev', 'autoprefixer:dev']
+        tasks: ['compass']
       },
       livereload: {
         options: {
@@ -232,23 +239,25 @@ module.exports = function (grunt) {
     }
   });
 
-   grunt.registerMultiTask('wrap', 'Wraps source files with specified header and footer', function() {
+    grunt.registerMultiTask('wrap', 'Wraps source files with specified header and footer', function() {
           var data = this.data,
               path = require('path'),
               dest = grunt.template.process(data.dest),
               files = this.filesSrc,
               header = grunt.file.read(grunt.template.process(data.header)),
               footer = grunt.file.read(grunt.template.process(data.footer)),
-              sep = grunt.utils.linefeed;
+              sep = "\n\n";
 
           files.forEach(function(f) {
               var p = dest + '/' + path.basename(f),
                   contents = grunt.file.read(f);
 
-              grunt.file.write(p, header + sep + contents + sep + footer);
+              grunt.file.write(p, header + sep + "<!-- start "+ path.basename(f) + "-->" + sep + contents + sep +  "<!-- end "+ path.basename(f) + "-->" + sep + footer);
               grunt.log.writeln('File "' + p + '" created.');
           });
     });
+
+
   /**
    * Default task
    * Run `grunt` on the command line
