@@ -1,0 +1,48 @@
+/**********************
+******** Some resets
+***********************/
+* a:focus {
+  outline: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/**********************
+******** Fonts
+***********************/
+/**********************
+******** General Styles
+***********************/
+body {
+  background: #ccc;
+  color: #555;
+  text-align: center;
+}
+
+a {
+  color: #555;
+}
+
+/**********************
+******** Header Styles
+***********************/
+header {
+  text-align: center;
+}
+
+/**********************
+******** Content
+***********************/
+.container {
+  width: 940px;
+  margin: 0 auto;
+}
+
+/**********************
+******** Footer Styles
+***********************/
+footer {
+  text-align: center;
+}

@@ -1,5 +1,5 @@
 /*!
- * Tpl-project
+ * tplproject
  * @author Mihai Ionut Vilcu
  * @version 1.0.0
  */
@@ -35,6 +35,5 @@ u[o]&&(delete u[o],c?delete n[l]:typeof n.removeAttribute!==i?n.removeAttribute(
     }
 }());
 
-// Place any jQuery/helper plugins in here.
 
-
+console.log("It works !");

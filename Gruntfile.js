@@ -88,10 +88,14 @@ module.exports = function (grunt) {
      * Imports all .js files and appends project banner
      */
     concat: {
-      dev: {
+      dev_css: {
+        files: {
+          '<%= project.dist_assets %>/css/main.css': '<%= project.css %>',
+        }
+      },
+      dev_js: {
         files: {
           '<%= project.dist_assets %>/js/scripts.js': '<%= project.js %>',
-          '<%= project.dist_assets %>/css/main.css': '<%= project.css %>',
         }
       },
       options: {
@@ -112,7 +116,7 @@ module.exports = function (grunt) {
       },
       dist: {
         files: {
-          '<%= project.dist_assets %>/js/main.min.js': '<%= project.dist_assets %>/js/main.js'
+          '<%= project.dist_assets %>/js/scripts.min.js': '<%= project.dist_assets %>/js/scripts.js'
         }
       }
     },
@@ -126,7 +130,8 @@ module.exports = function (grunt) {
       dist: {
         options: {
           sassDir: '<%= project.dev_assets %>/scss',
-          cssDir: '<%= project.dev_assets %>/css'
+          cssDir: '<%= project.dev_assets %>/css',
+          noLineComments : true
         }
       }
      },
@@ -183,10 +188,10 @@ module.exports = function (grunt) {
     cssmin: {
       dist: {
         options: {
-          banner: '<%= tag.banner %>'
+          // banner: '<%= tag.banner %>'
         },
         files: {
-            '<%= project.dist_assets %>/css/main.css': ['<%= project.css %>']
+            '<%= project.dist_assets %>/css/main.min.css': ['<%= project.dist_assets %>/css/main.css']
         }
       }
     },
@@ -202,6 +207,12 @@ module.exports = function (grunt) {
     },
 
     /**
+     * Cleans the min files when you enter the developer mode
+     * https://github.com/gruntjs/grunt-contrib-clean
+     */
+    clean: ['<%= project.dist_assets %>/css/main.min.css', '<%= project.dist_assets %>/js/scripts.min.js'],
+
+    /**
      * Runs tasks against changed watched files
      * https://github.com/gruntjs/grunt-contrib-watch
      * Watching development files and run concat/compile tasks
@@ -215,14 +226,16 @@ module.exports = function (grunt) {
         ],
         tasks: ['wrap']
       },
-      concat: {
-        files: ['<%= project.js %>',
-                '<%= project.css %>'
-        ],
-        tasks: ['concat:dev', 'autoprefixer:dev']
+      concat_css: {
+        files: ['<%= project.css %>'],
+        tasks: ['concat:dev_css', 'autoprefixer:dev']
+      },
+      concat_js: {
+        files: ['<%= project.js %>',],
+        tasks: ['concat:dev_js', 'autoprefixer:dev']
       },
       compass: {
-        files: '<%= project.dev_assets %>/{,*/}*.{scss,sass}',
+        files: '<%= project.dev_assets %>/scss/{,*/}*.{scss,sass}',
         tasks: ['compass']
       },
       livereload: {
@@ -263,8 +276,10 @@ module.exports = function (grunt) {
    * Run `grunt` on the command line
    */
   grunt.registerTask('default', [
+    'clean', // clean the min files while in dev
     'compass',
-    'concat:dev',
+    'concat:dev_css',
+    'concat:dev_js',
     'autoprefixer:dev',
     'wrap',
     // 'jshint',
@@ -280,11 +295,12 @@ module.exports = function (grunt) {
    */
   grunt.registerTask('build', [
     'compass',
-    'concat:dev',
-    'autoprefixer:dist',
-    'cssmin:dist',
-    // 'jshint',
-    'uglify'
+    'concat:dev_css',
+    'concat:dev_js',
+    'autoprefixer:dev',
+    'wrap',
+    'uglify',
+    'cssmin'
   ]);
 
 };
