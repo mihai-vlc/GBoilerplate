@@ -1,2 +1,11 @@
+(function ($, window, document, undefined) {
 
-console.log("It works !");
+  'use strict';
+
+  $(function () {
+
+    console.log("It works !");
+
+  });
+
+})(jQuery, window, document);

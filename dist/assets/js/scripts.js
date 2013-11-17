@@ -35,5 +35,14 @@ u[o]&&(delete u[o],c?delete n[l]:typeof n.removeAttribute!==i?n.removeAttribute(
     }
 }());
 
+(function ($, window, document, undefined) {
 
-console.log("It works !");
+  'use strict';
+
+  $(function () {
+
+    console.log("It works !");
+
+  });
+
+})(jQuery, window, document);
