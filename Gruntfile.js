@@ -205,6 +205,21 @@ module.exports = function (grunt) {
         path: 'http://localhost:<%= connect.options.port %>'
       }
     },
+    /**
+     * Uploads files to an ftp server
+     * https://github.com/zonak/grunt-ftp-deploy
+     */
+    'ftp-deploy': {
+      dist: {
+        auth: {
+          host: 'localhost',
+          port: 21,
+          authKey: 'ftp'
+        },
+        src: '<%= project.app %>',
+        dest: '_dist',
+      }
+    },
 
     /**
      * Cleans the min files when you enter the developer mode
@@ -302,5 +317,22 @@ module.exports = function (grunt) {
     'uglify',
     'cssmin'
   ]);
+
+  /**
+   * Ftp task
+   * Run `grunt ftp` on the command line
+   * It will upload build the files and upload them on the ftp.
+   */
+  grunt.registerTask('ftp', [
+    'compass',
+    'concat:dev_css',
+    'concat:dev_js',
+    'autoprefixer:dev',
+    'wrap',
+    'uglify',
+    'cssmin',
+    'ftp-deploy'
+  ]);
+
 
 };

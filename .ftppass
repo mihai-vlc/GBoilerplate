@@ -1,0 +1,6 @@
+{
+    "ftp" : {
+        "username" : "user",
+        "password" : "pass"
+    }
+}
