@@ -8,10 +8,6 @@
     box-sizing: border-box;
 }
 // reset custom styles on input fields
-input, button {
-    -moz-appearance: none;
-    -webkit-appearance: none;
-}
-select {
+input, button, select {
   -webkit-border-radius: none;
 }
