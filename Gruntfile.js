@@ -238,8 +238,8 @@ module.exports = function (grunt) {
         }
     },
     /**
-     * Copy some files that don't need to be handled (like modernizr, fonts)
-     * https://github.com/gruntjs/grunt-contrib-copy
+     * Compress the images
+     * https://github.com/gruntjs/grunt-contrib-imagemin
      */
     imagemin: {
         dev: {
@@ -248,9 +248,9 @@ module.exports = function (grunt) {
             },
             files: [{
                 expand: true,
-                cwd: 'src/',
+                cwd: '<%= project.src %>',
                 src: ['**/*.{png,jpg,jpeg,gif}'],
-                dest: "dist/"
+                dest: "<%= project.app %>"
             }]
         }
     },
