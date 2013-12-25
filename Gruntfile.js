@@ -40,7 +40,8 @@ module.exports = function (grunt) {
         '<%= project.dev_assets %>/scss/*.scss'
       ],
       js: [
-        '<%= project.src %>/assets/js/{,*/}*.js'
+        '<%= project.src %>/assets/js/{,*/}*.js',
+        '!<%= project.src %>/assets/js/{,*/}*.lib.js'
       ],
       css: [
         '<%= project.src %>/assets/css/{,*/}*.css'
@@ -156,11 +157,6 @@ module.exports = function (grunt) {
         files: {
           '<%= project.dist_assets %>/css/main.css': ['<%= project.dist_assets %>/css/main.css']
         }
-      },
-      dist: {
-        files: {
-          '<%= project.dist_assets %>/css/main.css': ['<%= project.dist_assets %>/css/main.css']
-        }
       }
     },
 
@@ -228,6 +224,38 @@ module.exports = function (grunt) {
     clean: ['<%= project.dist_assets %>/css/main.min.css', '<%= project.dist_assets %>/js/scripts.min.js'],
 
     /**
+     * Copy some files that don't need to be handled (like modernizr, fonts)
+     * https://github.com/gruntjs/grunt-contrib-copy
+     */
+    copy : {
+        dev : {
+            files: [{
+                expand : true,
+                cwd: '<%= project.src %>',
+                src : ['**/*.lib.js', '**/*.{webp,svg,otf,ttf,eot,woff}'],
+                dest: "<%= project.app %>"
+            }]
+        }
+    },
+    /**
+     * Copy some files that don't need to be handled (like modernizr, fonts)
+     * https://github.com/gruntjs/grunt-contrib-copy
+     */
+    imagemin: {
+        dev: {
+            options: {
+                optimizationLevel: 3
+            },
+            files: [{
+                expand: true,
+                cwd: 'src/',
+                src: ['**/*.{png,jpg,jpeg,gif}'],
+                dest: "dist/"
+            }]
+        }
+    },
+
+    /**
      * Runs tasks against changed watched files
      * https://github.com/gruntjs/grunt-contrib-watch
      * Watching development files and run concat/compile tasks
@@ -243,15 +271,19 @@ module.exports = function (grunt) {
       },
       concat_css: {
         files: ['<%= project.css %>'],
-        tasks: ['concat:dev_css', 'autoprefixer:dev']
+        tasks: ['concat:dev_css', 'autoprefixer']
       },
       concat_js: {
         files: ['<%= project.js %>',],
-        tasks: ['concat:dev_js', 'autoprefixer:dev']
+        tasks: ['concat:dev_js']
       },
       compass: {
         files: '<%= project.dev_assets %>/scss/{,*/}*.{scss,sass}',
         tasks: ['compass']
+      },
+      copy: {
+        files: ['**.lib.js', '**/*.{webp,svg,otf,ttf,eot,woff}'],
+        tasks: ['copy']
       },
       livereload: {
         options: {
@@ -295,9 +327,10 @@ module.exports = function (grunt) {
     'compass',
     'concat:dev_css',
     'concat:dev_js',
-    'autoprefixer:dev',
+    'autoprefixer',
     'wrap',
-    // 'jshint',
+    'copy',
+    'imagemin',
     'connect:livereload',
     'open',
     'watch'
@@ -312,8 +345,10 @@ module.exports = function (grunt) {
     'compass',
     'concat:dev_css',
     'concat:dev_js',
-    'autoprefixer:dev',
+    'autoprefixer',
     'wrap',
+    'copy',
+    'imagemin',
     'uglify',
     'cssmin'
   ]);
@@ -327,8 +362,9 @@ module.exports = function (grunt) {
     'compass',
     'concat:dev_css',
     'concat:dev_js',
-    'autoprefixer:dev',
+    'autoprefixer',
     'wrap',
+    'imagemin',
     'uglify',
     'cssmin',
     'ftp-deploy'
