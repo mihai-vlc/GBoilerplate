@@ -44,7 +44,8 @@ module.exports = function (grunt) {
         '!<%= project.src %>/assets/js/{,*/}*.lib.js'
       ],
       css: [
-        '<%= project.src %>/assets/css/{,*/}*.css'
+        '<%= project.src %>/assets/css/{,*/}*.css',
+        '!<%= project.src %>/assets/css/{,*/}*.lib.css'
       ]
     },
 
@@ -184,7 +185,8 @@ module.exports = function (grunt) {
     cssmin: {
       dist: {
         options: {
-          // banner: '<%= tag.banner %>'
+          banner: '<%= tag.banner %>',
+          keepSpecialComments : 0
         },
         files: {
             '<%= project.dist_assets %>/css/main.min.css': ['<%= project.dist_assets %>/css/main.css']
@@ -232,7 +234,7 @@ module.exports = function (grunt) {
             files: [{
                 expand : true,
                 cwd: '<%= project.src %>',
-                src : ['**/*.lib.js', '**/*.{webp,svg,otf,ttf,eot,woff}'],
+                src : ['**/*.lib.{css,js}', '**/*.{webp,svg,otf,ttf,eot,woff}'],
                 dest: "<%= project.app %>"
             }]
         }
@@ -297,7 +299,7 @@ module.exports = function (grunt) {
         ]
       }
     }
-  });
+  }); // end initConfig
 
     grunt.registerMultiTask('wrap', 'Wraps source files with specified header and footer', function() {
           var data = this.data,
