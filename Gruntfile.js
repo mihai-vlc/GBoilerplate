@@ -276,7 +276,7 @@ module.exports = function (grunt) {
         tasks: ['concat:dev_css', 'autoprefixer']
       },
       concat_js: {
-        files: ['<%= project.js %>',],
+        files: ['<%= project.js %>'],
         tasks: ['concat:dev_js']
       },
       compass: {
@@ -284,7 +284,7 @@ module.exports = function (grunt) {
         tasks: ['compass']
       },
       copy: {
-        files: ['**.lib.js', '**/*.{webp,svg,otf,ttf,eot,woff}'],
+        files: ['<%= project.dev_assets %>/{,*/}*.lib.js', '<%= project.dev_assets %>/{,*/}*.lib.css', '<%= project.src %>/{,*/}*.{webp,svg,otf,ttf,eot,woff}'],
         tasks: ['copy']
       },
       livereload: {
