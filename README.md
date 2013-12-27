@@ -1,6 +1,6 @@
 GBoilerplate
 ===========================
-A simple yet powerful grunt setup.  
+A simple yet powerful grunt setup. Really easy to use and you can get started with it in a few minutes.  
 
 Installation
 --------------
@@ -23,7 +23,8 @@ What it does
   * The dist/ folder is completely generated from src/ folder.
   * Includes Modernizr 2.1.7
   * Includes jQuery 1.10.2
-
+  * Includes an ftp task for easy deploy to an ftp server
+  * Adds a banner on the top of your css and javascript files
 
 Contributions
 -----------------
