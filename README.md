@@ -2,6 +2,8 @@ GBoilerplate
 ===========================
 A simple yet powerful grunt setup. Really easy to use and you can get started with it in a few minutes.  
 
+Video walk-through http://www.youtube.com/watch?v=MuBtfrtFwkY
+
 Installation
 --------------
  * Clone this repo `git clone https://github.com/ionutvmi/GBoilerplate.git`  
