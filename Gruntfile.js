@@ -271,7 +271,7 @@ module.exports = function (grunt) {
         ],
         tasks: ['wrap'],
         options: {
-          spawn: false,
+          spawn: true, // set it to false but comment out live reload from below and run grunt watch --gruntfile Gruntfile-Livereload.js form another command window
         }
       },
       concat_css: {
