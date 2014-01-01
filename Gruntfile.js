@@ -164,7 +164,6 @@ module.exports = function (grunt) {
     /**
      * Wrap
      * It will wrap the pages with the header and footer
-     * https://github.com/chrissrogers/grunt-wrap
      */
     wrap: {
         html: {
@@ -173,6 +172,7 @@ module.exports = function (grunt) {
             src: [
                 '<%= project.src %>/pages/content/{,*/}*.html'
             ],
+            current_file: '', // will be used to hold the edited file from watch
             dest: '<%= project.app %>'   // destination *directory*, probably better than specifying same file names twice
         }
     },
@@ -215,7 +215,7 @@ module.exports = function (grunt) {
           authKey: 'ftp'
         },
         src: '<%= project.app %>',
-        dest: '_dist',
+        dest: '_dist'
       }
     },
 
@@ -269,7 +269,10 @@ module.exports = function (grunt) {
                 '<%= project.src %>/pages/footer.tmpl',
                 '<%= project.src %>/pages/header.tmpl'
         ],
-        tasks: ['wrap']
+        tasks: ['wrap'],
+        options: {
+          spawn: false,
+        }
       },
       concat_css: {
         files: ['<%= project.css %>'],
@@ -301,23 +304,36 @@ module.exports = function (grunt) {
     }
   }); // end initConfig
 
-    grunt.registerMultiTask('wrap', 'Wraps source files with specified header and footer', function() {
-          var data = this.data,
-              path = require('path'),
-              dest = grunt.template.process(data.dest),
-              files = this.filesSrc,
-              header = grunt.file.read(grunt.template.process(data.header)),
-              footer = grunt.file.read(grunt.template.process(data.footer)),
-              sep = "\n\n";
+  grunt.registerMultiTask('wrap', 'Wraps source files with specified header and footer', function() {
+        grunt.sampleText = function(a) {
+          return "test" + a;
+        };
 
-          files.forEach(function(f) {
-              var p = dest + '/' + path.basename(f),
-                  contents = grunt.file.read(f);
+        var data = this.data,
+            path = require('path'),
+            dest = data.dest,
+            files = [data.current_file],
+            sep = "\n\n";
 
-              grunt.file.write(p, header + sep + "<!-- start "+ path.basename(f) + "-->" + sep + contents + sep +  "<!-- end "+ path.basename(f) + "-->" + sep + footer);
-              grunt.log.writeln('File "' + p + '" created.');
-          });
-    });
+        var cpath = path.normalize(data.current_file);
+        if((data.current_file === '') || (cpath == path.normalize(data.header)) || (cpath == path.normalize(data.footer)))
+          files = this.filesSrc;
+
+        files.forEach(function(f) {
+            var p = dest + '/' + path.basename(f),
+                header = grunt.template.process(grunt.file.read(data.header)),
+                footer = grunt.template.process(grunt.file.read(data.footer)),
+                contents = grunt.template.process(grunt.file.read(f));
+
+            grunt.file.write(p, header + sep + "<!-- start "+ path.basename(f) + "-->" + sep + contents + sep +  "<!-- end "+ path.basename(f) + "-->" + sep + footer);
+            grunt.log.writeln('File "' + p + '" created.');
+        });
+  });
+
+  grunt.event.on('watch', function(action, filepath, target) {
+      grunt.config("wrap.html.current_file", filepath);
+  });
+
 
 
   /**
