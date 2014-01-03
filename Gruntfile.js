@@ -290,13 +290,20 @@ module.exports = function (grunt) {
         files: ['<%= project.dev_assets %>/{,*/}*.lib.js', '<%= project.dev_assets %>/{,*/}*.lib.css', '<%= project.src %>/{,*/}*.{webp,svg,otf,ttf,eot,woff}'],
         tasks: ['copy']
       },
-      livereload: {
+      livereload_css: {
+        options: {
+          livereload: LIVERELOAD_PORT
+        },
+        files: [
+          '<%= project.dist_assets %>/css/*.css',
+        ]
+      },
+      livereload_html: {
         options: {
           livereload: LIVERELOAD_PORT
         },
         files: [
           '<%= project.app %>/{,*/}*.html',
-          '<%= project.dist_assets %>/css/*.css',
           '<%= project.dist_assets %>/js/{,*/}*.js',
           '<%= project.dist_assets %>/{,*/}*.{png,jpg,jpeg,gif,webp,svg}'
         ]

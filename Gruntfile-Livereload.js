@@ -47,13 +47,20 @@ module.exports = function (grunt) {
      * Livereload the browser once complete
      */
     watch: {
-      livereload: {
+      css: {
+        options: {
+          livereload: LIVERELOAD_PORT
+        },
+        files: [
+          '<%= project.dist_assets %>/css/*.css',
+        ]
+      },
+      html: {
         options: {
           livereload: LIVERELOAD_PORT
         },
         files: [
           '<%= project.app %>/{,*/}*.html',
-          '<%= project.dist_assets %>/css/*.css',
           '<%= project.dist_assets %>/js/{,*/}*.js',
           '<%= project.dist_assets %>/{,*/}*.{png,jpg,jpeg,gif,webp,svg}'
         ]
