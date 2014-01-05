@@ -1,3 +1,9 @@
+/**
+ *  GBoilerplate - Grunt Setup
+ *  Author: Mihai Ionut Vilcu
+ *  License: MIT
+ */
+
 'use strict';
 
 /**
@@ -271,8 +277,12 @@ module.exports = function (grunt) {
         ],
         tasks: ['wrap'],
         options: {
-          spawn: true, // set it to false but comment out live reload from below and run grunt watch --gruntfile Gruntfile-Livereload.js form another command window
+          spawn: true, // set it to false but comment out live reload from below and run `grunt watch --gruntfile Gruntfile-Livereload.js` form another command window
         }
+      },
+      imagemin : {
+        files : ['<%= project.dev_assets %>/{,*/}*.{png,jpg,jpeg,gif}'],
+        tasks : ['imagemin']
       },
       concat_css: {
         files: ['<%= project.css %>'],
@@ -312,9 +322,6 @@ module.exports = function (grunt) {
   }); // end initConfig
 
   grunt.registerMultiTask('wrap', 'Wraps source files with specified header and footer', function() {
-        grunt.sampleText = function(a) {
-          return "test" + a;
-        };
 
         var data = this.data,
             path = require('path'),
@@ -324,19 +331,23 @@ module.exports = function (grunt) {
 
         var cpath = path.normalize(data.current_file);
         if((data.current_file === '') || (cpath == path.normalize(data.header)) || (cpath == path.normalize(data.footer)))
-          files = this.filesSrc;
+          files = this.filesSrc; // all the html files
 
         files.forEach(function(f) {
+            // make the file name available inside the templates
+            grunt.current_file = path.basename(f);
+            // grab some data
             var p = dest + '/' + path.basename(f),
                 header = grunt.template.process(grunt.file.read(data.header)),
                 footer = grunt.template.process(grunt.file.read(data.footer)),
                 contents = grunt.template.process(grunt.file.read(f));
 
-            grunt.file.write(p, header + sep + "<!-- start "+ path.basename(f) + "-->" + sep + contents + sep +  "<!-- end "+ path.basename(f) + "-->" + sep + footer);
+            // join the content
+            grunt.file.write(p, header + sep + contents + sep + footer);
             grunt.log.writeln('File "' + p + '" created.');
         });
   });
-
+  // provide the current edited file to the wrap task (only works with spawn false)
   grunt.event.on('watch', function(action, filepath, target) {
       grunt.config("wrap.html.current_file", filepath);
   });
