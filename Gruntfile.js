@@ -7,6 +7,11 @@
 'use strict';
 
 /**
+ * Dependencies
+ */
+var path = require('path');
+
+/**
  * Livereload and connect variables
  */
 var LIVERELOAD_PORT = 35729;
@@ -14,8 +19,12 @@ var lrSnippet = require('connect-livereload')({
   port: LIVERELOAD_PORT
 });
 var mountFolder = function (connect, dir) {
-  return connect.static(require('path').resolve(dir));
+  return connect.static(path.resolve(dir));
 };
+/**
+ * Other settings
+ */
+var INCLUDE_LOCAL_FIRST = false;
 
 
 /**
@@ -42,6 +51,7 @@ module.exports = function (grunt) {
       app: 'dist',
       dist_assets: '<%= project.app %>/assets',
       dev_assets: '<%= project.src %>/assets',
+      partials_path : '<%= project.src %>/pages/partials',
       scss: [
         '<%= project.dev_assets %>/scss/*.scss'
       ],
@@ -272,12 +282,13 @@ module.exports = function (grunt) {
     watch: {
       wrap: {
         files: ['<%= project.src %>/pages/content/{,*/}*.html',
+                '<%= project.partials_path %>/{,*/}*.html',
                 '<%= project.src %>/pages/footer.tmpl',
                 '<%= project.src %>/pages/header.tmpl'
         ],
         tasks: ['wrap'],
         options: {
-          spawn: true, // set it to false but comment out live reload from below and run `grunt watch --gruntfile Gruntfile-Livereload.js` form another command window
+          spawn: false, // set it to false but comment out live reload from below and run `grunt watch --gruntfile Gruntfile-Livereload.js` form another command window
         }
       },
       imagemin : {
@@ -324,20 +335,24 @@ module.exports = function (grunt) {
   grunt.registerMultiTask('wrap', 'Wraps source files with specified header and footer', function() {
 
         var data = this.data,
-            path = require('path'),
             dest = data.dest,
-            files = [data.current_file],
-            sep = "\n\n";
+            files = [data.current_file], // just the current one, works if spawn == false
+            sep = data.sep || "\n\n";
 
-        var cpath = path.normalize(data.current_file);
-        if((data.current_file === '') || (cpath == path.normalize(data.header)) || (cpath == path.normalize(data.footer)))
+        if(wrapAll(data))
           files = this.filesSrc; // all the html files
 
         files.forEach(function(f) {
             // make the file name available inside the templates
             grunt.current_file = path.basename(f);
+            grunt.current_file_full = f;
+
+            // ignore partials
+            if(INCLUDE_LOCAL_FIRST && (grunt.current_file[0] == "_"))
+              return;
+
             // grab some data
-            var p = dest + '/' + path.basename(f),
+            var p = dest + '/' + path.relative(grunt.config("project.src") + "/pages/content",f),
                 header = grunt.template.process(grunt.file.read(data.header)),
                 footer = grunt.template.process(grunt.file.read(data.footer)),
                 contents = grunt.template.process(grunt.file.read(f));
@@ -351,6 +366,43 @@ module.exports = function (grunt) {
   grunt.event.on('watch', function(action, filepath, target) {
       grunt.config("wrap.html.current_file", filepath);
   });
+  /**
+   * Includes the content of a partial file
+   */
+  grunt.include = function (file_name, include_path) {
+      if(!include_path)
+        include_path = path.dirname(path.normalize(grunt.current_file_full));
+
+      // we first check for a local _file
+      var full_path = grunt.template.process(include_path + "/" + path.dirname(file_name) + "/_" + path.basename(file_name));
+
+      // if we can't find that we search in the partials folder
+      if(!grunt.file.exists(full_path) || !INCLUDE_LOCAL_FIRST)
+        full_path = grunt.config("project.partials_path") + "/" + file_name;
+
+      // return the content or the error message
+      if(grunt.file.exists(full_path))
+        return grunt.template.process(grunt.file.read(full_path));
+      else {
+        var message = "<pre>Error: File: `" + full_path + "` doesn't exists !</pre>";
+        grunt.log.error(message);
+        return message;
+      }
+  };
+
+  // determine if we should compile all the files or just the current one
+  function wrapAll(data) {
+    var cpath = path.normalize(data.current_file);
+    if(
+        (data.current_file === '') || // is empty
+        (cpath == path.normalize(data.header)) || // is header or footer
+        (cpath == path.normalize(data.footer)) ||
+        (cpath.indexOf(path.normalize(grunt.config("project.partials_path"))) === 0) // is in partials folder
+        (INCLUDE_LOCAL_FIRST && (grunt.current_file[0] == "_")) // is local partial
+      )
+      return true;
+    return false;
+  }
 
 
 
