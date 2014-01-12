@@ -288,7 +288,7 @@ module.exports = function (grunt) {
         ],
         tasks: ['wrap'],
         options: {
-          spawn: false, // set it to false but comment out live reload from below and run `grunt watch --gruntfile Gruntfile-Livereload.js` form another command window
+          spawn: true, // set it to false but comment out live reload from below and run `grunt watch --gruntfile Gruntfile-Livereload.js` form another command window
         }
       },
       imagemin : {
