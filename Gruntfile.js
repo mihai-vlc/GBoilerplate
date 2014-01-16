@@ -397,7 +397,7 @@ module.exports = function (grunt) {
         (data.current_file === '') || // is empty
         (cpath == path.normalize(data.header)) || // is header or footer
         (cpath == path.normalize(data.footer)) ||
-        (cpath.indexOf(path.normalize(grunt.config("project.partials_path"))) === 0) // is in partials folder
+        (cpath.indexOf(path.normalize(grunt.config("project.partials_path"))) === 0) || // is in partials folder
         (INCLUDE_LOCAL_FIRST && (grunt.current_file[0] == "_")) // is local partial
       )
       return true;
