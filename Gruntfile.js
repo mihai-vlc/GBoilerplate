@@ -10,6 +10,7 @@
  * Dependencies
  */
 var path = require('path');
+var exec = require("child_process").exec;
 
 /**
  * Livereload and connect variables
@@ -24,8 +25,8 @@ var mountFolder = function (connect, dir) {
 /**
  * Other settings
  */
-var INCLUDE_LOCAL_FIRST = false;
-
+var INCLUDE_LOCAL_FIRST = true;
+var SPAWN = false;
 
 /**
  * Grunt module
@@ -39,7 +40,7 @@ module.exports = function (grunt) {
   /**
    * Grunt config
    */
-  grunt.initConfig({
+  var CONFIG = {
 
     pkg: grunt.file.readJSON('package.json'),
 
@@ -288,7 +289,7 @@ module.exports = function (grunt) {
         ],
         tasks: ['wrap'],
         options: {
-          spawn: true, // set it to false but comment out live reload from below and run `grunt watch --gruntfile Gruntfile-Livereload.js` form another command window
+          spawn: SPAWN
         }
       },
       imagemin : {
@@ -310,27 +311,23 @@ module.exports = function (grunt) {
       copy: {
         files: ['<%= project.dev_assets %>/{,*/}*.lib.js', '<%= project.dev_assets %>/{,*/}*.lib.css', '<%= project.src %>/{,*/}*.{webp,svg,otf,ttf,eot,woff}'],
         tasks: ['copy']
-      },
-      livereload_css: {
-        options: {
-          livereload: LIVERELOAD_PORT
-        },
-        files: [
-          '<%= project.dist_assets %>/css/*.css',
-        ]
-      },
-      livereload_html: {
-        options: {
-          livereload: LIVERELOAD_PORT
-        },
-        files: [
-          '<%= project.app %>/{,*/}*.html',
-          '<%= project.dist_assets %>/js/{,*/}*.js',
-          '<%= project.dist_assets %>/{,*/}*.{png,jpg,jpeg,gif,webp,svg}'
-        ]
       }
+    },
+    startLivereload: {
+        dev:{}
     }
-  }); // end initConfig
+  };
+
+
+  // init grunt
+  grunt.initConfig(CONFIG);
+
+  grunt.registerMultiTask("startLivereload", "Starts livereload in a different process based on gruntfile-livereload", function(){
+      // start livereload over the dist files
+      var livereload = exec("grunt watch --gruntfile Gruntfile-Livereload.js");
+      console.log("Starting livereload(refresh the page first time)...");
+  });
+
 
   grunt.registerMultiTask('wrap', 'Wraps source files with specified header and footer', function() {
 
@@ -421,6 +418,7 @@ module.exports = function (grunt) {
     'imagemin',
     'connect:livereload',
     'open',
+    'startLivereload',
     'watch'
   ]);
 
