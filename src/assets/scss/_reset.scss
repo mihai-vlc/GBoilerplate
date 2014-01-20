@@ -1,6 +1,6 @@
-/*!*********************
-******** Some resets
-***********************/
+/* ==========================================================================
+    Small resets
+   ========================================================================== */
 * a:focus {
     outline: none;
 }
@@ -9,5 +9,8 @@
 }
 // reset custom styles on input fields
 input, button, select {
-  -webkit-border-radius: none;
+  -webkit-border-radius: 0;
+          border-radius: 0;
 }
+
+

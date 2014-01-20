@@ -100,8 +100,6 @@ module.exports = function (grunt) {
     },
 
     /**
-
-    /**
      * Concatenate JavaScript files
      * https://github.com/gruntjs/grunt-contrib-concat
      * Imports all .js files and appends project banner
@@ -150,7 +148,15 @@ module.exports = function (grunt) {
         options: {
           sassDir: '<%= project.dev_assets %>/scss',
           cssDir: '<%= project.dev_assets %>/css',
-          noLineComments : true
+          noLineComments: true,
+          force: true
+        }
+      },
+      dev: {
+        options: {
+          sassDir: '<%= project.dev_assets %>/scss',
+          cssDir: '<%= project.dev_assets %>/css',
+          noLineComments : false
         }
       }
      },
@@ -306,7 +312,7 @@ module.exports = function (grunt) {
       },
       compass: {
         files: '<%= project.dev_assets %>/scss/{,*/}*.{scss,sass}',
-        tasks: ['compass']
+        tasks: ['compass:dev']
       },
       copy: {
         files: ['<%= project.dev_assets %>/{,*/}*.lib.js', '<%= project.dev_assets %>/{,*/}*.lib.css', '<%= project.src %>/{,*/}*.{webp,svg,otf,ttf,eot,woff}'],
@@ -409,7 +415,7 @@ module.exports = function (grunt) {
    */
   grunt.registerTask('default', [
     'clean', // clean the min files while in dev
-    'compass',
+    'compass:dev',
     'concat:dev_css',
     'concat:dev_js',
     'autoprefixer',
@@ -428,7 +434,7 @@ module.exports = function (grunt) {
    * Then compress all JS/CSS files
    */
   grunt.registerTask('build', [
-    'compass',
+    'compass:dist',
     'concat:dev_css',
     'concat:dev_js',
     'autoprefixer',
@@ -445,7 +451,7 @@ module.exports = function (grunt) {
    * It will upload build the files and upload them on the ftp.
    */
   grunt.registerTask('ftp', [
-    'compass',
+    'compass:dist',
     'concat:dev_css',
     'concat:dev_js',
     'autoprefixer',
