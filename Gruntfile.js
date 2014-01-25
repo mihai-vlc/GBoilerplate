@@ -19,6 +19,7 @@ var LIVERELOAD_PORT = 35729;
 var lrSnippet = require('connect-livereload')({
   port: LIVERELOAD_PORT
 });
+var livereload; // separate process for livereload
 var mountFolder = function (connect, dir) {
   return connect.static(path.resolve(dir));
 };
@@ -330,7 +331,7 @@ module.exports = function (grunt) {
 
   grunt.registerMultiTask("startLivereload", "Starts livereload in a different process based on gruntfile-livereload", function(){
       // start livereload over the dist files
-      var livereload = exec("grunt watch --gruntfile Gruntfile-Livereload.js");
+      livereload = exec("grunt watch --gruntfile Gruntfile-Livereload.js");
       console.log("Starting livereload(refresh the page first time)...");
   });
 
@@ -406,6 +407,21 @@ module.exports = function (grunt) {
       return true;
     return false;
   }
+
+// Things to do on exit
+process.on('exit', function() {
+  console.log('... Closing server ...');
+  livereload.kill();
+});
+
+process.on('SIGTERM', function() {
+  return process.exit(0);
+});
+
+process.on('SIGINT', function() {
+  return process.exit(0);
+});
+
 
 
 
