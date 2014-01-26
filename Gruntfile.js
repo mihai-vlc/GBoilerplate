@@ -60,10 +60,6 @@ module.exports = function (grunt) {
       js: [
         '<%= project.src %>/assets/js/{,*/}*.js',
         '!<%= project.src %>/assets/js/{,*/}*.lib.js'
-      ],
-      css: [
-        '<%= project.src %>/assets/css/{,*/}*.css',
-        '!<%= project.src %>/assets/css/{,*/}*.lib.css'
       ]
     },
 
@@ -93,8 +89,16 @@ module.exports = function (grunt) {
       },
       livereload: {
         options: {
-          middleware: function (connect) {
-            return [lrSnippet, mountFolder(connect, 'dist')];
+          middleware: function (connect, options) {
+            return [lrSnippet, mountFolder(connect, grunt.template.process('.'))];
+          }
+        }
+      },
+      sm : {
+        options : {
+          port: 9001,
+          middleware: function (connect, options) {
+            return [mountFolder(connect, grunt.template.process('<%= project.dev_assets %>'))];
           }
         }
       }
@@ -106,11 +110,6 @@ module.exports = function (grunt) {
      * Imports all .js files and appends project banner
      */
     concat: {
-      dev_css: {
-        files: {
-          '<%= project.dist_assets %>/css/main.css': '<%= project.css %>',
-        }
-      },
       dev_js: {
         files: {
           '<%= project.dist_assets %>/js/scripts.js': '<%= project.js %>',
@@ -118,8 +117,7 @@ module.exports = function (grunt) {
       },
       options: {
         stripBanners: true,
-        nonull: true,
-        banner: '<%= tag.banner %>'
+        nonull: true
       }
     },
 
@@ -148,7 +146,7 @@ module.exports = function (grunt) {
       dist: {
         options: {
           sassDir: '<%= project.dev_assets %>/scss',
-          cssDir: '<%= project.dev_assets %>/css',
+          cssDir: '<%= project.dist_assets %>/css',
           noLineComments: true,
           force: true
         }
@@ -156,8 +154,9 @@ module.exports = function (grunt) {
       dev: {
         options: {
           sassDir: '<%= project.dev_assets %>/scss',
-          cssDir: '<%= project.dev_assets %>/css',
-          noLineComments : false
+          cssDir: '<%= project.dist_assets %>/css',
+          sourcemap: true,
+          noLineComments: true
         }
       }
      },
@@ -178,10 +177,12 @@ module.exports = function (grunt) {
           'android 4'
         ]
       },
-      dev: {
-        files: {
-          '<%= project.dist_assets %>/css/main.css': ['<%= project.dist_assets %>/css/main.css']
-        }
+      sourcemap: {
+        options: {
+          map: true
+        },
+        src: '<%= project.dist_assets %>/css/main.css',
+        dest: '<%= project.dist_assets %>/css/main.css'
       }
     },
 
@@ -224,7 +225,7 @@ module.exports = function (grunt) {
      */
     open: {
       server: {
-        path: 'http://localhost:<%= connect.options.port %>'
+        path: 'http://localhost:<%= connect.options.port + "/" + project.app % >'
       }
     },
     /**
@@ -258,7 +259,7 @@ module.exports = function (grunt) {
             files: [{
                 expand : true,
                 cwd: '<%= project.src %>',
-                src : ['**/*.lib.{css,js}', '**/*.{webp,svg,otf,ttf,eot,woff}'],
+                src : ['**/*.lib.js', '**/*.{webp,svg,otf,ttf,eot,woff,css}'],
                 dest: "<%= project.app %>"
             }]
         }
@@ -300,12 +301,8 @@ module.exports = function (grunt) {
         }
       },
       imagemin : {
-        files : ['<%= project.dev_assets %>/{,*/}*.{png,jpg,jpeg,gif}'],
+        files : '<%= project.dev_assets %>/{,*/}*.{png,jpg,jpeg,gif}',
         tasks : ['imagemin']
-      },
-      concat_css: {
-        files: ['<%= project.css %>'],
-        tasks: ['concat:dev_css', 'autoprefixer']
       },
       concat_js: {
         files: ['<%= project.js %>'],
@@ -313,10 +310,10 @@ module.exports = function (grunt) {
       },
       compass: {
         files: '<%= project.dev_assets %>/scss/{,*/}*.{scss,sass}',
-        tasks: ['compass:dev']
+        tasks: ['compass:dev', 'autoprefixer']
       },
       copy: {
-        files: ['<%= project.dev_assets %>/{,*/}*.lib.js', '<%= project.dev_assets %>/{,*/}*.lib.css', '<%= project.src %>/{,*/}*.{webp,svg,otf,ttf,eot,woff}'],
+        files: '<%= project.dev_assets %>/{,*/}*.{webp,svg,otf,ttf,eot,woff,css,lib.js}',
         tasks: ['copy']
       }
     },
@@ -408,22 +405,6 @@ module.exports = function (grunt) {
     return false;
   }
 
-// Things to do on exit
-process.on('exit', function() {
-  console.log('... Closing server ...');
-  livereload.kill();
-});
-
-process.on('SIGTERM', function() {
-  return process.exit(0);
-});
-
-process.on('SIGINT', function() {
-  return process.exit(0);
-});
-
-
-
 
   /**
    * Default task
@@ -432,13 +413,12 @@ process.on('SIGINT', function() {
   grunt.registerTask('default', [
     'clean', // clean the min files while in dev
     'compass:dev',
-    'concat:dev_css',
-    'concat:dev_js',
     'autoprefixer',
+    'concat:dev_js',
     'wrap',
     'copy',
     'imagemin',
-    'connect:livereload',
+    'connect',
     'open',
     'startLivereload',
     'watch'
@@ -451,7 +431,6 @@ process.on('SIGINT', function() {
    */
   grunt.registerTask('build', [
     'compass:dist',
-    'concat:dev_css',
     'concat:dev_js',
     'autoprefixer',
     'wrap',
@@ -468,7 +447,6 @@ process.on('SIGINT', function() {
    */
   grunt.registerTask('ftp', [
     'compass:dist',
-    'concat:dev_css',
     'concat:dev_js',
     'autoprefixer',
     'wrap',
