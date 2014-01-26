@@ -90,15 +90,7 @@ module.exports = function (grunt) {
       livereload: {
         options: {
           middleware: function (connect, options) {
-            return [lrSnippet, mountFolder(connect, grunt.template.process('.'))];
-          }
-        }
-      },
-      sm : {
-        options : {
-          port: 9001,
-          middleware: function (connect, options) {
-            return [mountFolder(connect, grunt.template.process('<%= project.dev_assets %>'))];
+            return [lrSnippet, mountFolder(connect, '.')];
           }
         }
       }
@@ -225,7 +217,7 @@ module.exports = function (grunt) {
      */
     open: {
       server: {
-        path: 'http://localhost:<%= connect.options.port + "/" + project.app % >'
+        path: 'http://localhost:<%= connect.options.port + "/" + project.app %>'
       }
     },
     /**
