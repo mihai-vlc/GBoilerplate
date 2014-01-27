@@ -169,10 +169,14 @@ module.exports = function (grunt) {
           'android 4'
         ]
       },
-      sourcemap: {
+      dev: {
         options: {
           map: true
         },
+        src: '<%= project.dist_assets %>/css/main.css',
+        dest: '<%= project.dist_assets %>/css/main.css'
+      },
+      dist: {
         src: '<%= project.dist_assets %>/css/main.css',
         dest: '<%= project.dist_assets %>/css/main.css'
       }
@@ -206,7 +210,8 @@ module.exports = function (grunt) {
           keepSpecialComments : 0
         },
         files: {
-            '<%= project.dist_assets %>/css/main.min.css': ['<%= project.dist_assets %>/css/main.css']
+            '<%= project.dist_assets %>/css/main.min.css': ['<%= project.dist_assets %>/css/main.css'],
+            '<%= project.dist_assets %>/css/all.min.css': ['<%= project.dist_assets %>/css/{,*/}*.css', '!<%= project.dist_assets %>/css/{main,all}.min.css']
         }
       }
     },
@@ -240,18 +245,26 @@ module.exports = function (grunt) {
      * Cleans the min files when you enter the developer mode
      * https://github.com/gruntjs/grunt-contrib-clean
      */
-    clean: ['<%= project.dist_assets %>/css/main.min.css', '<%= project.dist_assets %>/js/scripts.min.js'],
+    clean: ['<%= project.dist_assets %>/css/main.min.css', '<%= project.dist_assets %>/css/main.min.map', , '<%= project.dist_assets %>/css/all.min.css', '<%= project.dist_assets %>/js/scripts.min.js'],
 
     /**
      * Copy some files that don't need to be handled (like modernizr, fonts)
      * https://github.com/gruntjs/grunt-contrib-copy
      */
     copy : {
-        dev : {
+        bin : {
             files: [{
                 expand : true,
                 cwd: '<%= project.src %>',
-                src : ['**/*.lib.js', '**/*.{webp,svg,otf,ttf,eot,woff,css}'],
+                src : ['**/*.{webp,svg,otf,ttf,eot,woff,ico,lib.js}'],
+                dest: "<%= project.app %>"
+            }]
+        },
+        css : {
+            files: [{
+                expand : true,
+                cwd: '<%= project.src %>',
+                src : ['**/*.css'],
                 dest: "<%= project.app %>"
             }]
         }
@@ -302,11 +315,15 @@ module.exports = function (grunt) {
       },
       compass: {
         files: '<%= project.dev_assets %>/scss/{,*/}*.{scss,sass}',
-        tasks: ['compass:dev', 'autoprefixer']
+        tasks: ['compass:dev', 'autoprefixer:dev']
       },
       copy: {
-        files: '<%= project.dev_assets %>/{,*/}*.{webp,svg,otf,ttf,eot,woff,css,lib.js}',
-        tasks: ['copy']
+        files: '<%= project.dev_assets %>/{,*/}*.{webp,svg,otf,ttf,eot,woff,ico,lib.js}',
+        tasks: ['copy:bin']
+      },
+      copy_css: {
+        files: '<%= project.dev_assets %>/{,*/}*.css',
+        tasks: ['copy:css']
       }
     },
     startLivereload: {
@@ -405,7 +422,7 @@ module.exports = function (grunt) {
   grunt.registerTask('default', [
     'clean', // clean the min files while in dev
     'compass:dev',
-    'autoprefixer',
+    'autoprefixer:dev',
     'concat:dev_js',
     'wrap',
     'copy',
@@ -422,9 +439,10 @@ module.exports = function (grunt) {
    * Then compress all JS/CSS files
    */
   grunt.registerTask('build', [
+    'clean',
     'compass:dist',
     'concat:dev_js',
-    'autoprefixer',
+    'autoprefixer:dist',
     'wrap',
     'copy',
     'imagemin',
@@ -438,9 +456,10 @@ module.exports = function (grunt) {
    * It will upload build the files and upload them on the ftp.
    */
   grunt.registerTask('ftp', [
+    'clean',
     'compass:dist',
     'concat:dev_js',
-    'autoprefixer',
+    'autoprefixer:dist',
     'wrap',
     'imagemin',
     'uglify',

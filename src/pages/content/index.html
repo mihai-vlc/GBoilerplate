@@ -1,1 +1,11 @@
-<h4>A simple yet powerful grunt setup !</h4>
+<div class="container">
+    <h4>A simple yet powerful grunt setup !</h4>
+
+    <ul class="text-left">
+    <% for(var i = 0; i < 5; i++) { %>
+        <li>List item <%= i + 1 %></li>
+    <% } %>
+    </ul>
+
+    <p>You are on the <%= grunt.current_file %> page !</p>
+</div>
