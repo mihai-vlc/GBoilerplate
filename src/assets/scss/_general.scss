@@ -6,6 +6,7 @@
 body {
     background: #ffc;
     color: #555;
+    @include Arial();
     text-align: center;
 }
 

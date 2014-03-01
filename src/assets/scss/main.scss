@@ -1,4 +1,21 @@
+/*==============================================================
+    Main css document:
+-----------------------------------------------------------
+    1. Reset and Fonts
+        1.1 Normalize css reset
+        1.2 Fonts
+    2. General Styles
+        2.1 Header Styles
+        2.2 Footer Styles
+        2.3 Content Styles
+
+---------------------------------------------------------
+
+=============================================================*/
+
 @import "compass";
+
+@import "mixins";
 
 @import "normalize";
 
@@ -12,8 +29,9 @@
 
 @import "header";
 
-@import "content";
-
 @import "footer";
 
-/*# sourceMappingURL=http://127.0.0.1:9001/css/main.css.map */
+@import "content";
+
+
+

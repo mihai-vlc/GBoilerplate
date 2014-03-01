@@ -55,11 +55,11 @@ module.exports = function (grunt) {
       dev_assets: '<%= project.src %>/assets',
       partials_path : '<%= project.src %>/pages/partials',
       scss: [
-        '<%= project.dev_assets %>/scss/*.scss'
+        '<%= project.dev_assets %>/scss/**/*.scss'
       ],
       js: [
-        '<%= project.src %>/assets/js/{,*/}*.js',
-        '!<%= project.src %>/assets/js/{,*/}*.lib.js'
+        '<%= project.src %>/assets/js/**/*.js',
+        '!<%= project.src %>/assets/js/**/*.lib.js'
       ]
     },
 
@@ -295,8 +295,8 @@ module.exports = function (grunt) {
      */
     watch: {
       wrap: {
-        files: ['<%= project.src %>/pages/content/{,*/}*.html',
-                '<%= project.partials_path %>/{,*/}*.html',
+        files: ['<%= project.src %>/pages/content/**/*.html',
+                '<%= project.partials_path %>/**/*.html',
                 '<%= project.src %>/pages/footer.tmpl',
                 '<%= project.src %>/pages/header.tmpl'
         ],
@@ -306,7 +306,7 @@ module.exports = function (grunt) {
         }
       },
       imagemin : {
-        files : '<%= project.dev_assets %>/{,*/}*.{png,jpg,jpeg,gif}',
+        files : '<%= project.dev_assets %>/**/*.{png,jpg,jpeg,gif}',
         tasks : ['imagemin']
       },
       concat_js: {
@@ -314,15 +314,15 @@ module.exports = function (grunt) {
         tasks: ['concat:dev_js']
       },
       compass: {
-        files: '<%= project.dev_assets %>/scss/{,*/}*.{scss,sass}',
+        files: '<%= project.dev_assets %>/scss/**/*.{scss,sass}',
         tasks: ['compass:dev', 'autoprefixer:dev']
       },
       copy: {
-        files: '<%= project.dev_assets %>/{,*/}*.{webp,svg,otf,ttf,eot,woff,ico,lib.js}',
+        files: '<%= project.dev_assets %>/**/*.{webp,svg,otf,ttf,eot,woff,ico,lib.js}',
         tasks: ['copy:bin']
       },
       copy_css: {
-        files: '<%= project.dev_assets %>/{,*/}*.css',
+        files: '<%= project.dev_assets %>/**/*.css',
         tasks: ['copy:css']
       }
     },

@@ -27,19 +27,15 @@ module.exports = function (grunt) {
       app: 'dist',
       dist_assets: '<%= project.app %>/assets',
       dev_assets: '<%= project.src %>/assets',
+      partials_path : '<%= project.src %>/pages/partials',
       scss: [
-        '<%= project.dev_assets %>/scss/*.scss'
+        '<%= project.dev_assets %>/scss/**/*.scss'
       ],
       js: [
-        '<%= project.src %>/assets/js/{,*/}*.js',
-        '!<%= project.src %>/assets/js/{,*/}*.lib.js'
-      ],
-      css: [
-        '<%= project.src %>/assets/css/{,*/}*.css',
-        '!<%= project.src %>/assets/css/{,*/}*.lib.css'
+        '<%= project.src %>/assets/js/**/*.js',
+        '!<%= project.src %>/assets/js/**/*.lib.js'
       ]
     },
-
     /**
      * Runs tasks against changed watched files
      * https://github.com/gruntjs/grunt-contrib-watch
