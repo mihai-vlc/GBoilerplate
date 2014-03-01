@@ -386,7 +386,7 @@ module.exports = function (grunt) {
       // we first check for a local _file
       var full_path = grunt.template.process(include_path + "/" + path.dirname(file_name) + "/_" + path.basename(file_name));
 
-      // if we can't find that we search in the partials folder
+      // if we can't find that, we search in the partials folder
       if(!grunt.file.exists(full_path) || !INCLUDE_LOCAL_FIRST)
         full_path = grunt.config("project.partials_path") + "/" + file_name;
 
@@ -402,13 +402,16 @@ module.exports = function (grunt) {
 
   // determine if we should compile all the files or just the current one
   function wrapAll(data) {
+
     var cpath = path.normalize(data.current_file);
+    var current_file = path.basename(data.current_file);
+
     if(
         (data.current_file === '') || // is empty
         (cpath == path.normalize(data.header)) || // is header or footer
         (cpath == path.normalize(data.footer)) ||
         (cpath.indexOf(path.normalize(grunt.config("project.partials_path"))) === 0) || // is in partials folder
-        (INCLUDE_LOCAL_FIRST && (grunt.current_file[0] == "_")) // is local partial
+        (INCLUDE_LOCAL_FIRST && (current_file[0] == "_")) // is local partial
       )
       return true;
     return false;
